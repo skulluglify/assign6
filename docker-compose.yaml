@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+ web:
+  container_name: library
+  build: .
+  mem_limit: 256m
+  env_file:
+   - .env
+  networks:
+   - library-db
+  depends_on:
+   db:
+    condition: service_started
+  ports:
+   - 5000:5000/tcp
+
+ db:
+  container_name: library-db
+  image: docker.io/postgres:alpine
+  mem_limit: 256m
+  env_file:
+   - .env
+  networks:
+   - library-db
+  ports:
+   - 5432:5432/tcp
+   
+networks:
+ library-db:
+  driver: "bridge"
+  external: true
