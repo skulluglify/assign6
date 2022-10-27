@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+cd $(dirname $0)
+
+mkdir -p build
+
+cd build
+
+apt install wget unzip postgresql
+
+wget -c https://github.com/skulluglify/assign6/archive/refs/heads/main.zip
+unzip main.zip
+cp -r assign6-main/app /
+
+cat << EOF >/lib/systemd/system/star.service
+[Unit]
+Description=Running My Projekt
+
+[Service]
+ExecStart=sh -c "env POSTGRES_USER=users POSTGRES_PASSWORD=password POSTGRES_HOST=0.0.0.0 POSTGRES_DB=library-db POSTGRES_PORT=5432 python3 -m flask --app /app/app --no-debug run --host 0.0.0.0 --port 5000"
+
+[Install]
+WantedBy=default.target
+EOF
+
+echo 'CREATE USER "users" PASSWORD "password";' | sudo -u postgres psql
+echo 'CREATE DATABASE "library-db";' | sudo -u postgres psql
+echo 'GRANT ALL PRIVILEGES ON DATABASE "library-db" TO "users";' | sudo -u postgres psql
+
+cat<<<$(cat /etc/postgresql/14/main/postgresql.conf | sed -e 's/localhost/\*/g')>/etc/postgresql/14/main/postgresql.conf
+ 
+cat << EOF >>/etc/postgresql/14/main/pg_hba.conf
+
+host    all             all             0.0.0.0/0               md5
+host    all             all             ::/0                    md5
+EOF
+
+systemctl --system daemon-reload
+systemctl --system restart postgresql
+
+sleep 2
+
+systemctl --system enable star
+systemctl --system start star
