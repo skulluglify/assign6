@@ -11,11 +11,13 @@ mkdir -p build
 
 cd build
 
-apt install wget unzip postgresql
+apt install -y wget unzip postgresql python3-pip
 
 wget -c https://github.com/skulluglify/assign6/archive/refs/heads/main.zip
 unzip main.zip
 cp -r assign6-main/app /
+
+pip install -r assign6-main/requirements.txt
 
 cat << EOF >/lib/systemd/system/star.service
 [Unit]
@@ -33,6 +35,7 @@ echo 'CREATE DATABASE "library-db";' | sudo -u postgres psql
 echo 'GRANT ALL PRIVILEGES ON DATABASE "library-db" TO "users";' | sudo -u postgres psql
 
 cat<<<$(cat /etc/postgresql/14/main/postgresql.conf | sed -e 's/localhost/\*/g')>/etc/postgresql/14/main/postgresql.conf
+cat<<<$(cat /etc/postgresql/14/main/postgresql.conf | sed -e 's/\#listen_addresses/listen_addresses/g')>/etc/postgresql/14/main/postgresql.conf
  
 cat << EOF >>/etc/postgresql/14/main/pg_hba.conf
 
