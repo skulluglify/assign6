@@ -23,7 +23,7 @@ ExecStart=sh -c "env POSTGRES_USER=users POSTGRES_PASSWORD=password POSTGRES_HOS
 WantedBy=default.target
 EOF
 
-echo 'CREATE USER "users" PASSWORD "password";' | sudo -u postgres psql
+echo 'CREATE USER "users" WITH PASSWORD "password";' | sudo -u postgres psql
 echo 'CREATE DATABASE "library-db";' | sudo -u postgres psql
 echo 'GRANT ALL PRIVILEGES ON DATABASE "library-db" TO "users";' | sudo -u postgres psql
 
