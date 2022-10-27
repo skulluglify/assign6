@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+## wget -qO- https://raw.githubusercontent.com/skulluglify/assign6/main/assign6_install | sudo bash
+
 cd $(dirname $0)
 
 if [ -d build ]; then
@@ -43,10 +45,10 @@ host    all             all             0.0.0.0/0               md5
 host    all             all             ::/0                    md5
 EOF
 
-systemctl --system daemon-reload
-systemctl --system restart postgresql
+systemctl --system --no-wall --force daemon-reload
+systemctl --system --no-wall --force restart postgresql
 
 sleep 2
 
-systemctl --system enable star
-systemctl --system start star
+systemctl --system --no-wall --force enable star
+systemctl --system --no-wall --force start star
